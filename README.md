@@ -2,12 +2,7 @@
 
 This guide outlines setting up GEO and LEO configurations for the NTN (Non-Terrestrial Network) project using OpenAirInterface (OAI). It covers gNB and UE details, configuration files, commands, and log management.
 
-Clone the repository:
-```bash
-git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git ~/openairinterface5g
-cd ~/openairinterface5g
 
-```
 
 ## Configuration Files
  
