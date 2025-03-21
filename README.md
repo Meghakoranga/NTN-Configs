@@ -1,25 +1,27 @@
 # NTN Configuration Guide: GEO and LEO Configurations
 
 This guide outlines setting up GEO and LEO configurations for the NTN (Non-Terrestrial Network) project using OpenAirInterface (OAI). It covers gNB and UE details, configuration files, commands, and log management.
-
+```bash
+git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git ~/openairinterface5g
+cd ~/openairinterface5g
+```
 
 
 ## Configuration Files
  
 **gNB Configuration:**
-- Path: `targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band66.fr1.25PRB.usrpx300.conf`
+- Path: `ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf`
 
-**LEO Channel Model:**
-- Path: `targets/PROJECTS/GENERIC-NR-5GC/CONF/channelmod_rfsimu_LEO_satellite.conf`
+**LEO Configuration:**
+- Path: `ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn-leo.conf`
 
 ## gNB Configuration Details
-The following changes are to be made in  `targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band66.fr1.25PRB.usrpx300.conf` 
+The following changes are to be made in  `ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf` 
 ### Key Parameters
 
 **cellSpecificKoffset**: Adjusts for NTN propagation delay. Set `cellSpecificKoffset_r17` in `servingCellConfigCommon`:
 ```bash
       cellSpecificKoffset_r17 = 478; # GEO
-#      cellSpecificKoffset_r17 = 40; # LEO
 ```
 
 **Timers**: Extend timers in `gNBs.[0].TIMERS` for GEO:
@@ -39,7 +41,10 @@ The following changes are to be made in  `targets/PROJECTS/GENERIC-NR-5GC/CONF/g
 ```bash
     disable_harq = 1; // <---
 ```
+**channel model**: rfsimulator has to be configured to apply the channel model.
+This can be done by providing this line in the conf file in section rfsimulator:
 
+  ```options = "chanmod";```
 ## Simulation Parameters
 
 ### GEO Simulation
@@ -72,7 +77,7 @@ channelmod = {
   );
 };
 ```
-Add to conf file `targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band66.fr1.25PRB.usrpx300.conf` under `rfsimulator`:
+Add to conf file for leo under `rfsimulator`:
 ```bash
 options = ("chanmod");
 ```
@@ -93,52 +98,28 @@ After configuring the necessary configuration files, you can run the following c
  **GEO GNB :**
 ```bash
 cd cmake_targets
-sudo ./ran_build/build/nr-softmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band66.fr1.25PRB.usrpx300.conf --rfsim --rfsimulator.prop_delay 238.74
+sudo ./ran_build/build/nr-softmodem -O ../ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf --rfsim > gnb_geo.log 2>&1
 ```
-**GEO UE  :**
+```> gnb_geo.log 2>&1```  is used to include options to redirect both standard output and errors to log 
+**GEO UE  
 ```bash
-sudo ./ran_build/build/nr-uesoftmodem --band 66 -C 2152680000 --CO -400000000 -r 25 --numerology 0 --ssb 48 --rfsim --rfsimulator.prop_delay 238.74 --ntn-koffset 478 --ntn-ta-common 477.48
+cd cmake_targets
+sudo ./ran_build/build/nr-uesoftmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf --band 254 -C 2488400000 --CO -873500000 -r 25 --numerology 0 --ssb 60 --rfsim --rfsimulator.prop_delay 238.74> ue_geo.log 2>&1
 ```
 
 
  **LEO GNB  :**
 ```bash
 cd cmake_targets
-sudo ./ran_build/build/nr-softmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band66.fr1.25PRB.usrpx300.conf --rfsim --rfsimulator.prop_delay 20
+sudo ./ran_build/build/nr-softmodem -O ../ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn-leo.conf --rfsim > gnb_leo.log 2>&1
 ```
 
 
  **LEO UE  :**
 ```bash
-sudo ./ran_build/build/nr-uesoftmodem --band 66 -C 2152680000 --CO -400000000 -r 25 --numerology 0 --ssb 48 --rfsim --rfsimulator.prop_delay 20 --rfsimulator.options chanmod -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/channelmod_rfsimu_LEO_satellite.conf --time-sync-I 0.2 --ntn-koffset 40 --ntn-ta-common 37.74 --ntn-ta-commondrift -50 --autonomous-ta
-```
-## Commands for Saving Logs in GEO and LEO Configurations
- 
-If you wish to save logs while running the commands for better analysis and troubleshooting, you can use the  following commands .
-
-
-#### 1. **GEO GNB  :**
-```bash
 cd cmake_targets
-sudo ./ran_build/build/nr-softmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band66.fr1.25PRB.usrpx300.conf --rfsim --rfsimulator.prop_delay 238.74 > gnb_geo.log 2>&1
+sudo ./ran_build/build/nr-uesoftmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf --band 254 -C 2488400000 --CO -873500000 -r 25 --numerology 0 --ssb 60 --rfsim --rfsimulator.prop_delay 20 --rfsimulator.options chanmod --time-sync-I 0.1 --ntn-initial-time-drift -46 --autonomous-ta> ue_leo.log 2>&1
 ```
-
-#### 2. **LEO GNB  :**
-```bash
-cd cmake_targets
-sudo ./ran_build/build/nr-softmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band66.fr1.25PRB.usrpx300.conf --rfsim --rfsimulator.prop_delay 20 > gnb_leo.log 2>&1
-```
-
-#### 3. **GEO UE  :**
-```bash
-sudo ./ran_build/build/nr-uesoftmodem --band 66 -C 2152680000 --CO -400000000 -r 25 --numerology 0 --ssb 48 --rfsim --rfsimulator.prop_delay 238.74 --ntn-koffset 478 --ntn-ta-common 477.48 > ue_geo.log 2>&1
-```
-
-#### 4. **LEO UE  :**
-```bash
-sudo ./ran_build/build/nr-uesoftmodem --band 66 -C 2152680000 --CO -400000000 -r 25 --numerology 0 --ssb 48 --rfsim --rfsimulator.prop_delay 20 --rfsimulator.options chanmod -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/channelmod_rfsimu_LEO_satellite.conf --time-sync-I 0.2 --ntn-koffset 40 --ntn-ta-common 37.74 --ntn-ta-commondrift -50 --autonomous-ta > ue_leo.log 2>&1
-```
- The commands above include options to redirect both standard output and errors to log files.
 
 
 
