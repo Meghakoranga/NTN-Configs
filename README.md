@@ -101,7 +101,7 @@ cd cmake_targets
 sudo ./ran_build/build/nr-softmodem -O ../ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf --rfsim > gnb_geo.log 2>&1
 ```
 ```> gnb_geo.log 2>&1```  is used to include options to redirect both standard output and errors to log 
-**GEO UE  
+**GEO UE**
 ```bash
 cd cmake_targets
 sudo ./ran_build/build/nr-uesoftmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf --band 254 -C 2488400000 --CO -873500000 -r 25 --numerology 0 --ssb 60 --rfsim --rfsimulator.prop_delay 238.74> ue_geo.log 2>&1
