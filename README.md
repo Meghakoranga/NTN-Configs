@@ -98,7 +98,7 @@ After configuring the necessary configuration files, you can run the following c
  **GEO GNB :**
 ```bash
 cd cmake_targets
-sudo ./ran_build/build/nr-softmodem -O ../ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf --rfsim --rfsimulator.prop_delay 238> gnb_geo.log 2>&1
+sudo ./ran_build/build/nr-softmodem -O ../ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf --rfsim --rfsimulator.prop_delay 238.74> gnb_geo.log 2>&1
 ```
 ```> gnb_geo.log 2>&1```  is used to include options to redirect both standard output and errors to log 
 **GEO UE**
