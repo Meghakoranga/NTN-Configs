@@ -9,7 +9,7 @@ cd ~/openairinterface5g
 
 ## Configuration Files
  
-**gNB Configuration:**
+**GEO Configuration:**
 - Path: `ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf`
 
 **LEO Configuration:**
