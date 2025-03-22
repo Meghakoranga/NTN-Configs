@@ -19,34 +19,25 @@ cd ~/openairinterface5g
 The following changes are to be made in  `ci-scripts/conf_files/gnb.sa.band254.u0.25prb.rfsim.ntn.conf` 
 ### Key Parameters
 
-**cellSpecificKoffset**: Adjusts for NTN propagation delay. Set `cellSpecificKoffset_r17` in `servingCellConfigCommon`:
-```bash
-      cellSpecificKoffset_r17 = 478; # GEO
-```
-
-**Timers**: Extend timers in `gNBs.[0].TIMERS` for GEO:
-```bash
-    TIMERS :
-    {
-      sr_ProhibitTimer       = 0;
-      sr_TransMax            = 64;
-      sr_ProhibitTimer_v1700 = 512;
-      t300                   = 2000;
-      t301                   = 2000;
-      t319                   = 2000;
-    };
-```
-
-**HARQ Feedback**: For better throughput with large RTT, add `disable_harq`:
-```bash
-    disable_harq = 1; // <---
-```
-**channel model**: rfsimulator has to be configured to apply the channel model.
+**channel model** : rfsimulator has to be configured to apply the channel model.
 This can be done by providing this line in the conf file in section rfsimulator:
 
   ```options = "chanmod";```
 ## Simulation Parameters
+### cellSpecificKoffset_r17
+```bash
+ cellSpecificKoffset_r17=478;                              #GEO
+ cellSpecificKoffset_r17=40;                                #LEO
+```
+### HARQ
+```bash
+    disable_harq = 1; //    #GEO
+    num_dlharq = 32;        #LEO
+    num_ulharq = 32;        #LEO
 
+
+```
+##
 ### GEO Simulation
 Add the following to gNB and UE command lines:
 ```bash
@@ -81,11 +72,6 @@ Add to conf file for leo under `rfsimulator`:
 ```bash
 options = ("chanmod");
 ```
-Or use command line:
-```bash
---rfsimulator.options chanmod
-```
-
 To simulate a LEO satellite channel model with rfsimulator in UL (DL is simulated at the UE side), either the channelmod section as shown before has to be added to the gNB conf file, or a channelmod conf file has to be included like this:
 ```bash
 @include "channelmod_rfsimu_LEO_satellite.conf"
